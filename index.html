@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="ACCS121 Engine" />
+  <title>ACCS121 Test 2B Cram Engine — Chapters 12 & 16</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,900&family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #F8F7F4;
+      --bg-glass: rgba(255, 255, 255, 0.88);
+      --bg-card: #FFFFFF;
+      --bg-subtle: #EFECE6;
+      --text-primary: #161615;
+      --text-secondary: #52504A;
+      --text-muted: #858075;
+      --accent: #2563EB;
+      --accent-soft: rgba(37, 99, 235, 0.12);
+      --emerald: #10B981;
+      --emerald-soft: rgba(16, 185, 129, 0.14);
+      --amber: #D97706;
+      --amber-soft: rgba(217, 119, 6, 0.14);
+      --rose: #E11D48;
+      --rose-soft: rgba(225, 29, 72, 0.14);
+      --purple: #8B5CF6;
+      --purple-soft: rgba(139, 92, 246, 0.14);
+      --border: rgba(22, 22, 21, 0.1);
+      --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.09);
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-pill: 9999px;
+      --font-serif: 'Fraunces', Georgia, serif;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0F1115;
+      --bg-glass: rgba(22, 25, 32, 0.88);
+      --bg-card: #181B22;
+      --bg-subtle: #222630;
+      --text-primary: #F3F4F6;
+      --text-secondary: #9CA3AF;
+      --text-muted: #6B7280;
+      --accent: #60A5FA;
+      --accent-soft: rgba(96, 165, 250, 0.15);
+      --emerald: #34D399;
+      --emerald-soft: rgba(52, 211, 153, 0.15);
+      --amber: #FBBF24;
+      --amber-soft: rgba(251, 191, 36, 0.15);
+      --rose: #FB7185;
+      --rose-soft: rgba(251, 113, 133, 0.15);
+      --purple: #A78BFA;
+      --purple-soft: rgba(167, 139, 250, 0.15);
+      --border: rgba(255, 255, 255, 0.09);
+      --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.35);
+      --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.55);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      line-height: 1.55;
+      min-height: 100vh;
+      padding-bottom: 110px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    body.cheat-mode .deep-explain { display: none !important; }
+
+    /* Top Navigation */
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 20px;
+    }
+
+    .nav-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; }
+
+    .brand-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--emerald));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 0.95rem;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
+    .brand-title { font-family: var(--font-serif); font-weight: 700; font-size: 1.15rem; }
+
+    .countdown-pill {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+
+    .controls-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+    .ctrl-btn {
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      padding: 7px 12px;
+      border-radius: var(--radius-pill);
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+      user-select: none;
+    }
+
+    .ctrl-btn:hover { border-color: var(--accent); transform: translateY(-1px); }
+    .ctrl-btn.active { background: var(--emerald); color: #000; border-color: var(--emerald); font-weight: 700; }
+    .ctrl-btn.dice-active { background: var(--purple-soft); border-color: var(--purple); color: var(--purple); font-weight: 700; }
+
+    .beacon-btn {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid var(--emerald);
+      color: var(--emerald);
+      font-family: var(--font-mono);
+      font-weight: 700;
+    }
+    .beacon-btn:hover { background: var(--emerald); color: #000; }
+
+    .container { max-width: 1180px; margin: 0 auto; padding: 22px 20px; }
+
+    /* Hero Banner */
+    .hero-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-md);
+      display: grid;
+      grid-template-columns: 1.35fr 0.65fr;
+      gap: 20px;
+      align-items: center;
+    }
+
+    @media (max-width: 780px) { .hero-box { grid-template-columns: 1fr; } }
+
+    .hero-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--emerald);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hero-title {
+      font-family: var(--font-serif);
+      font-size: clamp(1.45rem, 2.6vw, 2.1rem);
+      margin-bottom: 10px;
+      line-height: 1.2;
+    }
+
+    .hero-sub { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 16px; }
+
+    .progress-strip {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-subtle);
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+    }
+
+    .progress-bar { flex: 1; height: 8px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--emerald)); transition: width 0.35s ease; }
+
+    .rule-box {
+      background: var(--bg-subtle);
+      border-left: 4px solid var(--amber);
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 0.82rem;
+    }
+
+    /* Status Banner for Randomizer */
+    .random-banner {
+      display: none;
+      background: var(--purple-soft);
+      border: 1px solid var(--purple);
+      color: var(--text-primary);
+      border-radius: var(--radius-md);
+      padding: 10px 16px;
+      margin-bottom: 16px;
+      font-size: 0.85rem;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .random-banner.visible { display: flex; }
+
+    /* 5-Pillar Tabs */
+    .tabs-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+
+    @media (max-width: 860px) { .tabs-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    .tab-btn {
+      padding: 13px 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: 0.83rem;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .tab-btn span { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; }
+    .tab-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); transform: translateY(-2px); }
+    .tab-btn.active span { color: rgba(255,255,255,0.85); }
+
+    .tab-panel { display: none; animation: fadeIn 0.25s ease; }
+    .tab-panel.active { display: block; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Cards & Grids */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      transition: var(--transition);
+    }
+
+    .card.mastered { border-color: var(--emerald); background: linear-gradient(180deg, var(--bg-card) 0%, var(--emerald-soft) 100%); }
+
+    .card-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+
+    .pill {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: var(--radius-pill);
+      text-transform: uppercase;
+    }
+    .pill.blue { background: var(--accent-soft); color: var(--accent); }
+    .pill.green { background: var(--emerald-soft); color: var(--emerald); }
+    .pill.amber { background: var(--amber-soft); color: var(--amber); }
+    .pill.rose { background: var(--rose-soft); color: var(--rose); }
+    .pill.purple { background: var(--purple-soft); color: var(--purple); }
+
+    .formula-block {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      background: var(--bg-subtle);
+      padding: 12px;
+      border-radius: 10px;
+      border-left: 3px solid var(--emerald);
+      overflow-x: auto;
+      color: var(--text-primary);
+    }
+
+    .mark-tick {
+      color: var(--emerald);
+      font-weight: 700;
+    }
+
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.82rem;
+      transition: var(--transition);
+    }
+    .icon-btn.checked { background: var(--emerald); color: #000; border-color: var(--emerald); font-weight: 700; }
+
+    /* Interactive Calculator Practice Input */
+    .calc-practice-box {
+      margin-top: 10px;
+      padding: 10px;
+      background: var(--bg-subtle);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .calc-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .calc-input {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+    }
+    .calc-btn {
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .calc-feedback {
+      font-size: 0.76rem;
+      font-family: var(--font-mono);
+      font-weight: 600;
+    }
+
+    /* Ledger Table Styling */
+    .ledger-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      margin-top: 10px;
+      background: var(--bg-subtle);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .ledger-table th, .ledger-table td {
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+
+    .ledger-table th { background: rgba(0,0,0,0.15); color: var(--amber); font-weight: 700; }
+    .ledger-table td.num, .ledger-table th.num { text-align: right; }
+
+    /* Bank Recon Sorter Game */
+    .sorter-btns {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .sort-btn {
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .sort-btn:hover { border-color: var(--accent); }
+    .sort-btn.correct { background: var(--emerald-soft); border-color: var(--emerald); color: var(--emerald); }
+    .sort-btn.wrong { background: var(--rose-soft); border-color: var(--rose); color: var(--rose); }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--text-primary);
+      color: var(--bg-primary);
+      padding: 11px 18px;
+      border-radius: var(--radius-pill);
+      font-size: 0.82rem;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(10px);
+      transition: var(--transition);
+      z-index: 999;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+  <header class="top-nav">
+    <div class="nav-inner">
+      <div class="brand">
+        <div class="brand-badge">121</div>
+        <div>
+          <div class="brand-title">ACCS121 Test 2B Cram Engine</div>
+          <div class="countdown-pill" id="countdown-pill">⏳ Sat 17 Oct • Ch 12 & Ch 16</div>
+        </div>
+      </div>
+
+      <div class="controls-bar">
+        <button class="ctrl-btn beacon-btn" onclick="returnToHub()" title="Bank your XP to DRILL HUB">◈ HUB</button>
+        <button class="ctrl-btn" id="btn-dice" onclick="randomizeDrillNumbers()">🎲 New Numbers</button>
+        <button class="ctrl-btn" id="btn-reset-memo" onclick="resetToMemo()" style="display:none;">↺ Memo Baseline</button>
+        <button class="ctrl-btn" id="btn-cheat" onclick="toggleCheatMode()">⚡ Formulas Only</button>
+        <button class="ctrl-btn" onclick="playChime()">🥣 432Hz Reset</button>
+        <button class="ctrl-btn" onclick="copyAllFormulas()">📎 Copy Formulas</button>
+        <button class="ctrl-btn" id="btn-theme" onclick="toggleTheme()">☀️ Light</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="random-banner" id="random-banner">
+      <div>
+        <strong style="color: var(--purple);">🎲 CALCULATOR DRILL MODE ACTIVE:</strong>
+        Fresh numbers generated. Grab your physical non-programmable calculator, punch the numbers, and check your accuracy below!
+      </div>
+      <button class="ctrl-btn" onclick="resetToMemo()" style="font-size: 0.72rem; padding: 4px 10px;">↺ Back to 2024/2025 Memo</button>
+    </div>
+
+    <section class="hero-box">
+      <div>
+        <div class="hero-eyebrow">
+          <span>⚡ Zero-To-Pass Deterministic Engine</span>
+          <span class="pill green" id="mode-pill">NWU Memo Grounded</span>
+        </div>
+        <h1 class="hero-title">Don’t learn "accounting". Learn the 0.5-mark bracket algorithm.</h1>
+        <p class="hero-sub">
+          NWU memos award <strong>0.5 marks for every single number inside your calculation brackets</strong> plus <strong>2.0 free layout marks</strong> per statement. Even if your final total never balances, writing the bracket formulas below locks in 70%+.
+        </p>
+        <div class="progress-strip">
+          <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+          <span style="font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700;" id="progress-text">0 / 22 Locked In</span>
+        </div>
+      </div>
+
+      <div class="rule-box">
+        <strong style="color: var(--amber); display: block; margin-bottom: 6px;">🚨 NON-NEGOTIABLE VENUE RULES (NWU):</strong>
+        • <strong>Black or blue ink ONLY</strong> (pencil = 0 marks).<br/>
+        • <strong>Round every calculation</strong> to the nearest Rand.<br/>
+        • <strong>Always write the "R" symbol</strong> and Year in column headers (+0.5 free mark).<br/>
+        • <strong>Never write net numbers alone</strong> — always write the bracket formula next to the line item!
+      </div>
+    </section>
+
+    <nav class="tabs-grid">
+      <button class="tab-btn active" onclick="switchTab('map', this)">
+        <span>Pillar 01 • 5 Mins</span>
+        <strong>🧭 Zero-to-One Map</strong>
+      </button>
+      <button class="tab-btn" onclick="switchTab('adjustments', this)">
+        <span>Pillar 02 • Ch 12</span>
+        <strong>🧮 7 Bracket Drills</strong>
+      </button>
+      <button class="tab-btn" onclick="switchTab('statements', this)">
+        <span>Pillar 03 • Ch 12</span>
+        <strong>📋 Statement Templates</strong>
+      </button>
+      <button class="tab-btn" onclick="switchTab('recon', this)">
+        <span>Pillar 04 • Ch 16</span>
+        <strong>🏦 Bank Recon Sorter</strong>
+      </button>
+      <button class="tab-btn" onclick="switchTab('sprint', this)">
+        <span>Pillar 05 • Gameplan</span>
+        <strong>🎯 Exam-Room Checklist</strong>
+      </button>
+    </nav>
+
+    <!-- PILLAR 1: ZERO TO ONE SYSTEM MAP -->
+    <section id="tab-map" class="tab-panel active">
+      <div class="cards-grid" id="map-grid"></div>
+    </section>
+
+    <!-- PILLAR 2: 7 BRACKET DRILLS (CH 12) -->
+    <section id="tab-adjustments" class="tab-panel">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px; flex-wrap:wrap; gap: 10px;">
+        <div>
+          <h2 style="font-family: var(--font-serif); font-size: 1.35rem;">7 Core Bracket Workings (0.5 Marks Per Number)</h2>
+          <p style="font-size: 0.84rem; color: var(--text-secondary);">Practice typing your answer into each card to test your physical calculator speed!</p>
+        </div>
+        <button class="ctrl-btn dice-active" onclick="randomizeDrillNumbers()">🎲 Spin New Numbers</button>
+      </div>
+      <div class="cards-grid" id="adj-grid"></div>
+    </section>
+
+    <!-- PILLAR 3: STATEMENT TEMPLATES (CH 12) -->
+    <section id="tab-statements" class="tab-panel">
+      <div id="statements-container" style="display: flex; flex-direction: column; gap: 20px;"></div>
+    </section>
+
+    <!-- PILLAR 4: BANK RECON SORTER (CH 16) -->
+    <section id="tab-recon" class="tab-panel">
+      <div class="rule-box" style="margin-bottom: 18px; border-left-color: var(--emerald);">
+        <strong>🔑 The Single Golden Rule of Chapter 16 (Bank Reconciliation):</strong><br/>
+        Ask ONE question for every mismatch item:<br/>
+        1. <strong>Did the BANK know about it first, and our books don't have it yet?</strong> → Put it in our <strong>CRJ (Money In)</strong> or <strong>CPJ (Money Out)</strong>.<br/>
+        2. <strong>Did WE already record it in our books, and the BANK hasn't cleared it yet (or the bank made an error)?</strong> → Put it in the <strong>Bank Reconciliation Statement</strong> (Deposits = Credit; Cheques/EFTs = Debit).
+      </div>
+      <div class="cards-grid" id="recon-grid"></div>
+    </section>
+
+    <!-- PILLAR 5: EXAM ROOM CHECKLIST -->
+    <section id="tab-sprint" class="tab-panel">
+      <div class="cards-grid" id="sprint-grid"></div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast">Copied!</div>
+
+  <script>
+    const SYSTEM_MAP = [
+      {
+        id: 'm1',
+        tag: 'Core Architecture',
+        title: '1. What Chapter 12 Actually Is (Data Routing)',
+        formula: 'Trial Balance (Raw Data) + Adjustments (Patches) = Financial Statements (UI Output)',
+        explain: 'Think of the Pre-Adjustment Trial Balance as an unpatched database table on the last day of the financial year. The "Additional Information" bullets are 6 to 8 patches you must apply inside brackets before rendering three views: (1) Statement of Profit or Loss, (2) Statement of Financial Position, and (3) Notes (PPE & Trade Receivables).'
+      },
+      {
+        id: 'm2',
+        tag: 'Free Marks Hack',
+        title: '2. The 2.0 Free Marks on Every Statement',
+        formula: 'Heading (0.5) + Column "R" & Year (0.5) + Layout/Communication (1.0) = 2.0 Marks',
+        explain: 'Before doing any math, write the full entity name, statement name, and date on line 1 (0.5 mark). Write the year and "R" at the top of the money column (0.5 mark). Use clean brackets ( ) for negative numbers and zero abbreviations to claim the 1.0 communication skill mark.'
+      },
+      {
+        id: 'm3',
+        tag: 'Chapter 12 Routing',
+        title: '3. Which Account Goes to Which Statement?',
+        formula: 'Income & Expenses → Profit/Loss (SPL) | Assets, Equity & Liabilities → Financial Position (SFP)',
+        explain: 'Sales, Cost of Sales, Rent, Salaries, Insurance, Credit Losses, Depreciation, and Interest go to the Statement of Profit or Loss. Land, Vehicles, Equipment, Inventory, Debtors, Bank, Capital, Drawings, Loans, and Creditors go to the Statement of Financial Position (and its Notes).'
+      },
+      {
+        id: 'm4',
+        tag: 'Chapter 16 Mirror',
+        title: '4. Why Bank Statements Are Backwards (Mirror Rule)',
+        formula: 'Our Bank Account (Asset): +Dr / -Cr  <==>  Bank Statement (Liability to Bank): -Dr / +Cr',
+        explain: 'In our General Ledger, Bank is our Asset (Debit = positive money, Credit = overdraft). To the Bank, our account is a Liability they owe us—so when money comes in, the Bank Statement CREDITS us; when bank charges or debit orders come out, the Bank Statement DEBITS us.'
+      }
+    ];
+
+    const MEMO_ADJUSTMENTS = [
+      {
+        id: 'a1',
+        marks: '1.5 Marks • 2025 Memo Exact',
+        title: 'Drill 1: 13-Month Rent / Income Received in Advance',
+        scenario: 'Trial Balance shows Rent Income = R15,600. Rent was received for 13 months up to 1 month after year-end.',
+        formula: '15 600 (0.5) / 13 (0.5) x 12 (0.5) = R14,400',
+        targetNum: 14400,
+        explain: 'Divide by 13 to find the monthly rent (R1,200), then multiply by 12 for the current year. Put R14,400 in Statement of Profit or Loss. The extra 1 month (R1,200) goes to Trade & Other Payables (Income received in advance).'
+      },
+      {
+        id: 'a2',
+        marks: '1.5 Marks • 2025 Memo Exact',
+        title: 'Drill 2: Prepaid Insurance Pro-Rata Split',
+        scenario: 'Trial Balance shows Insurance = R4,800. Includes an annual policy of R1,800 paid for 10 months into the NEXT financial year.',
+        formula: '4 800 (0.5) - [1 800 (0.5) x 10/12 (0.5)] = R3,300',
+        targetNum: 3300,
+        explain: '10 months of the R1,800 policy (R1,500) belongs to next year. Subtract R1,500 from R4,800 in Operating Expenses (= R3,300), and add R1,500 to Prepaid Expenses inside the Trade & Other Receivables Note.'
+      },
+      {
+        id: 'a3',
+        marks: '2.5 Marks • High-Yield Trap',
+        title: 'Drill 3: Two-Step Debtors & 5% Credit Loss Allowance',
+        scenario: 'TB shows Debtors = R5,200, Bad Debts = R400, Old Allowance = R100 (after prior adjustment). Write off further R200 bad debt, and set Allowance to 5% of remaining debtors.',
+        formula: 'Step 1 (Debtors Note): 5 200 (0.5) - 200 (0.5) = R5,000\nStep 2 (Target 5%): 5 000 x 5% (0.5P) = R250\nStep 3 (SPL Expense): 400 (0.5) + 150 (0.5P) = R550',
+        targetNum: 550,
+        explain: 'ALWAYS subtract the new bad debt write-off (R200) from Debtors (R5,200) FIRST to get R5,000 before multiplying by 5%! Allowance increase = 250 - 100 = 150. Even if you mess up an earlier number, the marker gives you 0.5P (principle mark) for multiplying your net debtors by 5%.'
+      },
+      {
+        id: 'a4',
+        marks: '2.5 Marks • Guaranteed Question',
+        title: 'Drill 4: Dual Depreciation (Vehicles vs. Equipment)',
+        scenario: 'Vehicles (Cost R100,000; Accum Depr R36,000) depreciated at 20% p.a. on Diminishing Balance. Equipment (Cost R40,000) at 10% p.a. on Straight-Line (Cost).',
+        formula: 'VEH: [(100 000 (0.5) - 36 000 (0.5)) x 20% (0.5)] = R12,800\nEQ: [40 000 (0.5) x 10% (0.5)] = R4,000\nTotal SPL Expense = R16,800',
+        targetNum: 16800,
+        explain: 'Diminishing balance (carrying value method) means you MUST subtract Accumulated Depreciation from Cost before multiplying by the percentage. Straight-line (cost method) multiplies Cost directly by the percentage.'
+      },
+      {
+        id: 'a5',
+        marks: '1.5 Marks • Finance Income',
+        title: 'Drill 5: Pro-Rata Interest on Fixed Deposit',
+        scenario: 'Fixed deposit of R15,000 invested for 6 months of the year at 10% p.a. interest.',
+        formula: '15 000 (0.5) x 10% (0.5) x 6/12 (0.5) = R750',
+        targetNum: 750,
+        explain: 'Appears on the Statement of Profit or Loss right below Operating Profit as Finance Income / Interest Income (+R750). Any unpaid portion goes to Accrued Income in the Receivables Note.'
+      },
+      {
+        id: 'a6',
+        marks: '1.5 Marks • Finance Cost',
+        title: 'Drill 6: Pro-Rata Interest on Long-Term Loan',
+        scenario: 'Loan of R20,000 at 15% p.a. was active for the last 2 months of the financial year.',
+        formula: '20 000 (0.5) x 15% (0.5) x 2/12 (0.5) = (R500)',
+        targetNum: 500,
+        explain: 'Appears as the final deduction on the Statement of Profit or Loss as Finance Cost (R500) in brackets to arrive at Profit for the Year.'
+      },
+      {
+        id: 'a7',
+        marks: '1.0 Mark • Consumables',
+        title: 'Drill 7: Stationery / Consumables on Hand at Year-End',
+        scenario: 'Trial Balance shows Stationery = R800. Physical stocktake reveals R250 of stationery unused at year-end.',
+        formula: '800 (0.5) - 250 (0.5) = R550',
+        targetNum: 550,
+        explain: 'Only the stationery actually used (R550) is an expense in the Statement of Profit or Loss. The unused R250 is an asset under Inventories on the Statement of Financial Position.'
+      }
+    ];
+
+    const MEMO_RECON_ITEMS = [
+      {
+        id: 'r1',
+        item: '1. Bank Statement shows Service Fees / Bank Charges of R420',
+        correct: 'CPJ',
+        why: 'The bank initiated this charge; our books do not know about it yet. Money left our account → Record in Supplementary CPJ.'
+      },
+      {
+        id: 'r2',
+        item: '2. Deposit of R14,500 recorded in our CRJ on 30 June does NOT appear on the June Bank Statement',
+        correct: 'RECON_CR',
+        why: 'We already recorded it in our CRJ; the bank just hasn’t cleared it yet (timing difference). Credit the Bank Recon Statement (+).'
+      },
+      {
+        id: 'r3',
+        item: '3. Debtor P. Tau paid R3,200 directly into our bank account (appears only on Bank Statement)',
+        correct: 'CRJ',
+        why: 'Money came in via direct EFT and is not in our books yet → Record in Supplementary CRJ.'
+      },
+      {
+        id: 'r4',
+        item: '4. Dishonoured cheque / Unpaid EFT (marked R/D — Refer to Drawer) for R1,100 from a customer',
+        correct: 'CPJ',
+        why: 'We previously thought we received this money in the CRJ, but it bounced. We must reverse it out of our cash book → Record in CPJ.'
+      },
+      {
+        id: 'r5',
+        item: '5. EFT / Cheque #402 for R6,800 in our CPJ has not yet been presented to the bank for payment',
+        correct: 'RECON_DR',
+        why: 'We already deducted it in our CPJ; the bank hasn’t deducted it from the Bank Statement yet → Debit the Bank Recon Statement (-).'
+      },
+      {
+        id: 'r6',
+        item: '6. Debit order for Outsurance (R1,850) appears on Bank Statement only',
+        correct: 'CPJ',
+        why: 'Automatic payment deducted by the bank that is missing from our cash book → Record in Supplementary CPJ.'
+      },
+      {
+        id: 'r7',
+        item: '7. The Bank mistakenly debited our Bank Statement with R2,400 belonging to another business',
+        correct: 'RECON_CR',
+        why: 'Our books are correct! The bank made the error and wrongly reduced our statement balance. We fix it on the Bank Recon Statement by CREDITING R2,400 back.'
+      },
+      {
+        id: 'r8',
+        item: '8. Interest on positive bank balance (R310) credited on Bank Statement',
+        correct: 'CRJ',
+        why: 'The bank gave us interest we haven’t recorded in our books yet → Record in Supplementary CRJ.'
+      }
+    ];
+
+    const SPRINT_STEPS = [
+      {
+        id: 's1',
+        phase: 'Block 1 • First 90 Minutes Today',
+        title: 'Memorize the 4-Box Bank Recon Pipeline (Ch 16)',
+        formula: '1. Update CRJ (+) & CPJ (-) → 2. Post to Bank T-Account → 3. Recon Statement (Cr Deposits / Dr EFTs)',
+        explain: 'Click through all 8 cards in Pillar 04 until you get 8/8 green without guessing. In the exam, start with the Bank Recon question first—it is 100% mechanical and bags fast confidence marks.'
+      },
+      {
+        id: 's2',
+        phase: 'Block 2 • Next 2 Hours',
+        title: 'Lock In the 7 Bracket Adjustments (Ch 12)',
+        formula: 'Write every adjustment inside brackets on the face of the Statement of Profit or Loss',
+        explain: 'Even if you forget how the Balance Sheet balances, writing `15 600 / 13 x 12` or `(100 000 - 36 000) x 20%` inside brackets next to the expense line forces the marker to give you 0.5 per number.'
+      },
+      {
+        id: 's3',
+        phase: 'Block 3 • Exam-Room Time Discipline',
+        title: 'Never Spend Extra Time Chasing a Balancing Total',
+        formula: '50 Marks = 100 Minutes (Strictly 2.0 Minutes Per Mark)',
+        explain: 'A balancing total at the bottom of a statement is worth at most 0.5 to 1.0 mark. The bracket lines above it are worth 14+ marks. Drop in your headings, write your bracket formulas, and keep moving!'
+      }
+    ];
+
+    let currentAdjustments = JSON.parse(JSON.stringify(MEMO_ADJUSTMENTS));
+    let currentRecon = JSON.parse(JSON.stringify(MEMO_RECON_ITEMS));
+    let isRandomized = false;
+    let mastered = JSON.parse(localStorage.getItem('accs121_mastered') || '[]');
+    let cheatMode = false;
+
+    function fmt(n) {
+      return Number(n).toLocaleString('en-ZA');
+    }
+
+    function pickRandom(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function randomizeDrillNumbers() {
+      isRandomized = true;
+      document.getElementById('random-banner').classList.add('visible');
+      document.getElementById('btn-reset-memo').style.display = 'inline-flex';
+      document.getElementById('btn-dice').classList.add('dice-active');
+      document.getElementById('mode-pill').textContent = '🎲 Random Calculator Drill';
+      document.getElementById('mode-pill').className = 'pill purple';
+
+      // 1. Rent Drill
+      const rentM = pickRandom([1100, 1200, 1400, 1500, 1600, 1800, 2000, 2200, 2400]);
+      const rent13 = rentM * 13;
+      const rent12 = rentM * 12;
+
+      // 2. Prepaid Insurance
+      const insMo = pickRandom([120, 150, 180, 200, 240]);
+      const insPolicy = insMo * 12;
+      const insNextMonths = pickRandom([8, 9, 10, 11]);
+      const insPrepaid = insMo * insNextMonths;
+      const insBase = pickRandom([2400, 2800, 3000, 3500]);
+      const insTB = insBase + insPolicy;
+      const insNet = insTB - insPrepaid;
+
+      // 3. Two-Step Debtors
+      const debtNet = pickRandom([4000, 5000, 6000, 7000, 8000]);
+      const debtWriteOff = pickRandom([200, 300, 400, 500]);
+      const debtTB = debtNet + debtWriteOff;
+      const allowTarget = Math.round(debtNet * 0.05);
+      const allowOld = Math.round(allowTarget - pickRandom([80, 100, 120, 150]));
+      const allowIncrease = allowTarget - allowOld;
+      const badDebtsTB = pickRandom([300, 400, 500]);
+      const totalCreditLosses = badDebtsTB + allowIncrease;
+
+      // 4. Depreciation
+      const vehCost = pickRandom([80000, 100000, 120000, 150000]);
+      const vehAcc = pickRandom([20000, 30000, 36000, 40000]);
+      const vehCV = vehCost - vehAcc;
+      const vehDepr = Math.round(vehCV * 0.20);
+      const eqCost = pickRandom([30000, 40000, 50000, 60000]);
+      const eqDepr = Math.round(eqCost * 0.10);
+      const totalDepr = vehDepr + eqDepr;
+
+      // 5. Fixed Deposit
+      const fdP = pickRandom([12000, 15000, 18000, 20000, 24000]);
+      const fdRate = pickRandom([8, 10, 12]);
+      const fdMonths = pickRandom([3, 6, 8, 9]);
+      const fdIncome = Math.round((fdP * fdRate * fdMonths) / 1200);
+
+      // 6. Loan Interest
+      const loanP = pickRandom([20000, 24000, 30000, 36000, 40000]);
+      const loanRate = pickRandom([12, 15, 18]);
+      const loanMonths = pickRandom([2, 3, 4, 6]);
+      const loanCost = Math.round((loanP * loanRate * loanMonths) / 1200);
+
+      // 7. Stationery
+      const statTB = pickRandom([800, 950, 1100, 1250, 1400]);
+      const statUnused = pickRandom([180, 220, 250, 300]);
+      const statConsumed = statTB - statUnused;
+
+      currentAdjustments = [
+        {
+          id: 'a1',
+          marks: '1.5 Marks • Random Drill',
+          title: 'Drill 1: 13-Month Rent / Income Received in Advance',
+          scenario: `Trial Balance shows Rent Income = R${fmt(rent13)}. Rent was received for 13 months up to 1 month after year-end.`,
+          formula: `${fmt(rent13)} (0.5) / 13 (0.5) x 12 (0.5) = R${fmt(rent12)}`,
+          targetNum: rent12,
+          explain: `Divide by 13 to find monthly rent (R${fmt(rentM)}), then multiply by 12. Extra 1 month (R${fmt(rentM)}) goes to Trade & Other Payables.`
+        },
+        {
+          id: 'a2',
+          marks: '1.5 Marks • Random Drill',
+          title: 'Drill 2: Prepaid Insurance Pro-Rata Split',
+          scenario: `Trial Balance shows Insurance = R${fmt(insTB)}. Includes an annual policy of R${fmt(insPolicy)} paid for ${insNextMonths} months into NEXT year.`,
+          formula: `${fmt(insTB)} (0.5) - [${fmt(insPolicy)} (0.5) x ${insNextMonths}/12 (0.5)] = R${fmt(insNet)}`,
+          targetNum: insNet,
+          explain: `${insNextMonths} months prepaid (R${fmt(insPrepaid)}) subtracted from expenses and recorded in Trade & Other Receivables Note.`
+        },
+        {
+          id: 'a3',
+          marks: '2.5 Marks • Random Drill',
+          title: 'Drill 3: Two-Step Debtors & 5% Credit Loss Allowance',
+          scenario: `TB shows Debtors = R${fmt(debtTB)}, Bad Debts = R${fmt(badDebtsTB)}, Old Allowance = R${fmt(allowOld)}. Write off R${fmt(debtWriteOff)} bad debt, set Allowance to 5% of remaining debtors.`,
+          formula: `Step 1 (Debtors Note): ${fmt(debtTB)} (0.5) - ${fmt(debtWriteOff)} (0.5) = R${fmt(debtNet)}\nStep 2 (Target 5%): ${fmt(debtNet)} x 5% (0.5P) = R${fmt(allowTarget)}\nStep 3 (SPL Expense): ${fmt(badDebtsTB)} (0.5) + ${fmt(allowIncrease)} (0.5P) = R${fmt(totalCreditLosses)}`,
+          targetNum: totalCreditLosses,
+          explain: `Net debtors = R${fmt(debtNet)}. Allowance increases by R${fmt(allowIncrease)} (from R${fmt(allowOld)} to R${fmt(allowTarget)}). Total SPL credit losses = R${fmt(totalCreditLosses)}.`
+        },
+        {
+          id: 'a4',
+          marks: '2.5 Marks • Random Drill',
+          title: 'Drill 4: Dual Depreciation (Vehicles vs. Equipment)',
+          scenario: `Vehicles (Cost R${fmt(vehCost)}; Accum Depr R${fmt(vehAcc)}) at 20% p.a. on Diminishing Balance. Equipment (Cost R${fmt(eqCost)}) at 10% p.a. on Straight-Line.`,
+          formula: `VEH: [(${fmt(vehCost)} (0.5) - ${fmt(vehAcc)} (0.5)) x 20% (0.5)] = R${fmt(vehDepr)}\nEQ: [${fmt(eqCost)} (0.5) x 10% (0.5)] = R${fmt(eqDepr)}\nTotal SPL Expense = R${fmt(totalDepr)}`,
+          targetNum: totalDepr,
+          explain: `Vehicles CV = R${fmt(vehCV)} x 20% = R${fmt(vehDepr)}. Equipment = R${fmt(eqCost)} x 10% = R${fmt(eqDepr)}. Total SPL Depreciation = R${fmt(totalDepr)}.`
+        },
+        {
+          id: 'a5',
+          marks: '1.5 Marks • Random Drill',
+          title: 'Drill 5: Pro-Rata Interest on Fixed Deposit',
+          scenario: `Fixed deposit of R${fmt(fdP)} invested for ${fdMonths} months of the financial year at ${fdRate}% p.a. interest.`,
+          formula: `${fmt(fdP)} (0.5) x ${fdRate}% (0.5) x ${fdMonths}/12 (0.5) = R${fmt(fdIncome)}`,
+          targetNum: fdIncome,
+          explain: `Appears on Statement of Profit or Loss as Finance Income (+R${fmt(fdIncome)}).`
+        },
+        {
+          id: 'a6',
+          marks: '1.5 Marks • Random Drill',
+          title: 'Drill 6: Pro-Rata Interest on Long-Term Loan',
+          scenario: `Loan of R${fmt(loanP)} at ${loanRate}% p.a. was active for ${loanMonths} months of the year.`,
+          formula: `${fmt(loanP)} (0.5) x ${loanRate}% (0.5) x ${loanMonths}/12 (0.5) = (R${fmt(loanCost)})`,
+          targetNum: loanCost,
+          explain: `Appears on Statement of Profit or Loss in brackets as Finance Cost ((R${fmt(loanCost)})).`
+        },
+        {
+          id: 'a7',
+          marks: '1.0 Mark • Random Drill',
+          title: 'Drill 7: Stationery / Consumables Consumed',
+          scenario: `Trial Balance shows Stationery = R${fmt(statTB)}. Physical stocktake reveals R${fmt(statUnused)} stationery unused at year-end.`,
+          formula: `${fmt(statTB)} (0.5) - ${fmt(statUnused)} (0.5) = R${fmt(statConsumed)}`,
+          targetNum: statConsumed,
+          explain: `Only used stationery (R${fmt(statConsumed)}) is an expense. Unused R${fmt(statUnused)} is an Asset under Inventories.`
+        }
+      ];
+
+      // Also randomize bank recon amounts slightly
+      currentRecon = [
+        { id: 'r1', item: `1. Bank Statement shows Service Fees / Bank Charges of R${pickRandom([380, 420, 460, 510, 540])}`, correct: 'CPJ', why: 'Bank initiated charge; missing from our cash book. Money out → Record in Supplementary CPJ.' },
+        { id: 'r2', item: `2. Deposit of R${fmt(pickRandom([11200, 13400, 14500, 16800]))} in our CRJ on 30 June does NOT appear on the June Bank Statement`, correct: 'RECON_CR', why: 'We already entered it in CRJ; bank hasn’t cleared it yet. Credit the Bank Recon Statement (+).' },
+        { id: 'r3', item: `3. Debtor P. Tau paid R${fmt(pickRandom([2800, 3200, 3500, 4100]))} directly into bank account (Bank Statement only)`, correct: 'CRJ', why: 'Direct EFT deposit not in our cash book yet → Record in Supplementary CRJ.' },
+        { id: 'r4', item: `4. Dishonoured cheque / Unpaid EFT (R/D) for R${fmt(pickRandom([950, 1100, 1300, 1450]))} from customer`, correct: 'CPJ', why: 'Bounced money must be reversed out of cash book → Record in Supplementary CPJ.' },
+        { id: 'r5', item: `5. EFT / Cheque #402 for R${fmt(pickRandom([5400, 6800, 7200, 8100]))} in our CPJ not yet presented to bank`, correct: 'RECON_DR', why: 'Already in our CPJ; bank hasn’t deducted it yet → Debit the Bank Recon Statement (-).' },
+        { id: 'r6', item: `6. Debit order for Outsurance (R${fmt(pickRandom([1650, 1850, 1920, 2100]))}) appears on Bank Statement only`, correct: 'CPJ', why: 'Automatic debit from bank missing from cash book → Record in Supplementary CPJ.' },
+        { id: 'r7', item: `7. The Bank mistakenly debited our Bank Statement with R${fmt(pickRandom([1900, 2400, 2800, 3100]))} belonging to another firm`, correct: 'RECON_CR', why: 'Bank error wrongly lowered our balance! Correct on Bank Recon Statement by CREDITING (+).' },
+        { id: 'r8', item: `8. Interest on positive bank balance (R${pickRandom([240, 290, 310, 360])}) credited on Bank Statement`, correct: 'CRJ', why: 'Positive bank interest missing from our books → Record in Supplementary CRJ.' }
+      ];
+
+      renderAll();
+      playChime();
+      showToast('🎲 Fresh numbers generated! Punch into your calculator.');
+    }
+
+    function resetToMemo() {
+      isRandomized = false;
+      document.getElementById('random-banner').classList.remove('visible');
+      document.getElementById('btn-reset-memo').style.display = 'none';
+      document.getElementById('btn-dice').classList.remove('dice-active');
+      document.getElementById('mode-pill').textContent = 'NWU Memo Grounded';
+      document.getElementById('mode-pill').className = 'pill green';
+
+      currentAdjustments = JSON.parse(JSON.stringify(MEMO_ADJUSTMENTS));
+      currentRecon = JSON.parse(JSON.stringify(MEMO_RECON_ITEMS));
+      renderAll();
+      playChime();
+      showToast('↺ Restored official 2024/2025 NWU memo values');
+    }
+
+    function toggleMastery(id, btn) {
+      const idx = mastered.indexOf(id);
+      if (idx > -1) {
+        mastered.splice(idx, 1);
+        btn.classList.remove('checked');
+        btn.closest('.card').classList.remove('mastered');
+      } else {
+        mastered.push(id);
+        btn.classList.add('checked');
+        btn.closest('.card').classList.add('mastered');
+        playChime();
+      }
+      localStorage.setItem('accs121_mastered', JSON.stringify(mastered));
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const total = SYSTEM_MAP.length + currentAdjustments.length + currentRecon.length + SPRINT_STEPS.length;
+      const pct = Math.round((mastered.length / total) * 100);
+      document.getElementById('progress-fill').style.width = pct + '%';
+      document.getElementById('progress-text').textContent = `${mastered.length} / ${total} Locked In (${pct}%)`;
+    }
+
+    function checkCalcAnswer(btn, target) {
+      const parent = btn.closest('.calc-practice-box');
+      const input = parent.querySelector('.calc-input');
+      const feedback = parent.querySelector('.calc-feedback');
+      const userVal = parseFloat(input.value.replace(/[\s,R]/g, ''));
+
+      if (isNaN(userVal)) {
+        feedback.innerHTML = '<span style="color:var(--amber);">⚠️ Enter a number first</span>';
+        return;
+      }
+
+      if (Math.abs(userVal - target) <= 1) {
+        feedback.innerHTML = '<span style="color:var(--emerald);">✓ Exact match! 0.5-mark locked in.</span>';
+        parent.closest('.card').classList.add('mastered');
+        playChime();
+      } else {
+        feedback.innerHTML = `<span style="color:var(--rose);">✗ Calculated R${fmt(userVal)}. Target was R${fmt(target)}. Check working!</span>`;
+      }
+    }
+
+    function renderAll() {
+      // Pillar 1: Map
+      document.getElementById('map-grid').innerHTML = SYSTEM_MAP.map(m => {
+        const done = mastered.includes(m.id);
+        return `
+          <article class="card ${done ? 'mastered' : ''}">
+            <div>
+              <div class="card-head">
+                <span class="pill blue">${m.tag}</span>
+                <button class="icon-btn ${done ? 'checked' : ''}" onclick="toggleMastery('${m.id}', this)" title="Mark Mastered">✓</button>
+              </div>
+              <h3 style="margin: 10px 0; font-size: 1.08rem;">${m.title}</h3>
+              <div class="formula-block">${m.formula}</div>
+              <p class="deep-explain" style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 10px;">${m.explain}</p>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      // Pillar 2: Adjustments
+      document.getElementById('adj-grid').innerHTML = currentAdjustments.map(a => {
+        const done = mastered.includes(a.id);
+        return `
+          <article class="card ${done ? 'mastered' : ''}">
+            <div>
+              <div class="card-head">
+                <span class="pill ${isRandomized ? 'purple' : 'green'}">${a.marks}</span>
+                <button class="icon-btn ${done ? 'checked' : ''}" onclick="toggleMastery('${a.id}', this)" title="Mark Mastered">✓</button>
+              </div>
+              <h3 style="margin: 10px 0; font-size: 1.05rem;">${a.title}</h3>
+              <p class="deep-explain" style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 8px;"><strong>Exam Prompt:</strong> ${a.scenario}</p>
+              <div class="formula-block" style="white-space: pre-wrap;">${a.formula}</div>
+              <p class="deep-explain" style="font-size: 0.83rem; color: var(--text-secondary); margin-top: 10px;">${a.explain}</p>
+            </div>
+            <div class="calc-practice-box">
+              <span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--text-muted); text-transform: uppercase;">Calculator Check</span>
+              <div class="calc-row">
+                <input type="text" class="calc-input" placeholder="Punch result..." onkeydown="if(event.key==='Enter')checkCalcAnswer(this, ${a.targetNum})" />
+                <button class="calc-btn" onclick="checkCalcAnswer(this, ${a.targetNum})">Check</button>
+              </div>
+              <div class="calc-feedback"></div>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      // Pillar 3: Templates (reactive to currentAdjustments)
+      const a1 = currentAdjustments[0];
+      const a2 = currentAdjustments[1];
+      const a3 = currentAdjustments[2];
+      const a4 = currentAdjustments[3];
+      const a5 = currentAdjustments[4];
+      const a6 = currentAdjustments[5];
+      const a7 = currentAdjustments[6];
+
+      // Dynamic sub-math for Statement of Profit or Loss
+      const rentVal = a1.targetNum;
+      const insVal = a2.targetNum;
+      const clVal = a3.targetNum;
+      const deprVal = a4.targetNum;
+      const fdVal = a5.targetNum;
+      const loanVal = a6.targetNum;
+      const statVal = a7.targetNum;
+
+      const salaries = 14950;
+      const totalOpex = statVal + insVal + salaries + clVal + deprVal;
+      const rev = 250400;
+      const cos = 150000;
+      const grossProfit = rev - cos;
+      const operatingProfit = grossProfit + rentVal - totalOpex;
+      const profitForYear = operatingProfit + fdVal - loanVal;
+
+      document.getElementById('statements-container').innerHTML = `
+        <div class="card">
+          <div class="card-head">
+            <span class="pill amber">Template 1 • 15 Marks (${isRandomized ? 'Live Dynamic Calculated Values' : '2025 NWU Memo Format'})</span>
+          </div>
+          <h3 style="font-family: var(--font-serif); font-size: 1.2rem;">Statement of Profit or Loss and Other Comprehensive Income</h3>
+          <table class="ledger-table">
+            <thead>
+              <tr>
+                <th>SPITZ TRADERS — STATEMENT OF PROFIT OR LOSS FOR THE YEAR ENDED 28 FEB 2026 <span class="mark-tick">[0.5]</span></th>
+                <th class="num">2026 (R) <span class="mark-tick">[0.5]</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Revenue (Sales - Sales returns / settlement discount granted)</td><td class="num">${fmt(rev)}</td></tr>
+              <tr><td>Cost of sales (always in brackets!)</td><td class="num">(${fmt(cos)})</td></tr>
+              <tr><td><strong>Gross profit</strong></td><td class="num"><strong>${fmt(grossProfit)}</strong></td></tr>
+              <tr><td><strong>Other operating income</strong> (e.g. Rent income: <code>${a1.formula.split('=')[0]}</code>)</td><td class="num">${fmt(rentVal)}</td></tr>
+              <tr><td><strong>Operating expenses</strong> (Total in brackets)</td><td class="num"><strong>(${fmt(totalOpex)})</strong></td></tr>
+              <tr><td>&nbsp;&nbsp;• Stationery consumed (<code>${a7.formula.split('=')[0]}</code>)</td><td class="num">${fmt(statVal)}</td></tr>
+              <tr><td>&nbsp;&nbsp;• Insurance (<code>${a2.formula.split('=')[0]}</code>)</td><td class="num">${fmt(insVal)}</td></tr>
+              <tr><td>&nbsp;&nbsp;• Salaries and wages</td><td class="num">${fmt(salaries)}</td></tr>
+              <tr><td>&nbsp;&nbsp;• Credit losses (<code>Bad debts + allowance diff</code>)</td><td class="num">${fmt(clVal)}</td></tr>
+              <tr><td>&nbsp;&nbsp;• Depreciation (Vehicles + Equipment)</td><td class="num">${fmt(deprVal)}</td></tr>
+              <tr><td><strong>Operating profit</strong></td><td class="num"><strong>${fmt(operatingProfit)}</strong></td></tr>
+              <tr><td>Finance income (<code>${a5.formula.split('=')[0]}</code>)</td><td class="num">${fmt(fdVal)}</td></tr>
+              <tr><td>Finance cost (<code>${a6.formula.split('=')[0]}</code>) — in brackets!</td><td class="num">(${fmt(loanVal)})</td></tr>
+              <tr><td><strong>PROFIT FOR THE YEAR</strong></td><td class="num"><strong>${fmt(profitForYear)}</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <span class="pill blue">Template 2 • Trade & Other Receivables Note + Equity Spine</span>
+          </div>
+          <h3 style="font-family: var(--font-serif); font-size: 1.2rem;">Trade & Other Receivables Note + Capital / Equity Formula</h3>
+          <table class="ledger-table">
+            <thead>
+              <tr>
+                <th>Line Item & Bracket Formula</th>
+                <th class="num">2026 (R) <span class="mark-tick">[0.5]</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Trade debtors (<code>Pre-adjustment TB less further bad debt write-off</code>)</td><td class="num">5 000</td></tr>
+              <tr><td>Less: Allowance for credit losses (<code>Target 5%</code>) — in brackets!</td><td class="num">(250)</td></tr>
+              <tr><td><strong>Net trade debtors</strong></td><td class="num"><strong>4 750</strong></td></tr>
+              <tr><td>Prepaid expenses (e.g. unexpired insurance paid in advance)</td><td class="num">1 500</td></tr>
+              <tr><td>Accrued income (income earned this year but not yet received)</td><td class="num">${fmt(fdVal)}</td></tr>
+              <tr><td><strong>Total Trade and Other Receivables (goes to Current Assets on SFP)</strong></td><td class="num"><strong>${fmt(4750 + 1500 + fdVal)}</strong></td></tr>
+            </tbody>
+          </table>
+          <div class="formula-block" style="margin-top: 10px;">
+            <strong>Equity / Capital Note (Question 1.4 Memo Pattern):</strong><br/>
+            Opening Capital (62,550) [0.5] + Profit for the Year (${fmt(profitForYear)}) [0.5] - Drawings (-13,100) [0.5] = Closing Capital (${fmt(62550 + profitForYear - 13100)})
+          </div>
+        </div>
+      `;
+
+      // Pillar 4: Bank Recon Sorter
+      document.getElementById('recon-grid').innerHTML = currentRecon.map(r => {
+        const done = mastered.includes(r.id);
+        return `
+          <article class="card ${done ? 'mastered' : ''}">
+            <div>
+              <div class="card-head">
+                <span class="pill amber">Ch 16 Routing Drill</span>
+                <button class="icon-btn ${done ? 'checked' : ''}" onclick="toggleMastery('${r.id}', this)" title="Mark Mastered">✓</button>
+              </div>
+              <h3 style="margin: 10px 0; font-size: 0.98rem;">${r.item}</h3>
+              <div class="sorter-btns">
+                <button class="sort-btn" onclick="checkSort(this, 'CRJ', '${r.correct}')">➕ Update CRJ</button>
+                <button class="sort-btn" onclick="checkSort(this, 'CPJ', '${r.correct}')">➖ Update CPJ</button>
+                <button class="sort-btn" onclick="checkSort(this, 'RECON_CR', '${r.correct}')">🏦 Recon: Credit (+)</button>
+                <button class="sort-btn" onclick="checkSort(this, 'RECON_DR', '${r.correct}')">🏦 Recon: Debit (-)</button>
+              </div>
+              <p class="recon-feedback" style="display: none; font-size: 0.82rem; color: var(--emerald); margin-top: 10px; background: var(--bg-subtle); padding: 10px; border-radius: 8px;">
+                ${r.why}
+              </p>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      // Pillar 5: Sprint
+      document.getElementById('sprint-grid').innerHTML = SPRINT_STEPS.map(s => {
+        const done = mastered.includes(s.id);
+        return `
+          <article class="card ${done ? 'mastered' : ''}">
+            <div>
+              <div class="card-head">
+                <span class="pill rose">${s.phase}</span>
+                <button class="icon-btn ${done ? 'checked' : ''}" onclick="toggleMastery('${s.id}', this)" title="Mark Mastered">✓</button>
+              </div>
+              <h3 style="margin: 10px 0; font-size: 1.05rem;">${s.title}</h3>
+              <div class="formula-block">${s.formula}</div>
+              <p class="deep-explain" style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 10px;">${s.explain}</p>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      updateProgress();
+    }
+
+    function checkSort(btn, chosen, actual) {
+      const parent = btn.parentElement;
+      parent.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('correct', 'wrong'));
+      const fb = btn.closest('.card').querySelector('.recon-feedback');
+      if (chosen === actual) {
+        btn.classList.add('correct');
+        fb.style.display = 'block';
+        playChime();
+      } else {
+        btn.classList.add('wrong');
+        fb.style.display = 'block';
+      }
+    }
+
+    function switchTab(key, btn) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + key).classList.add('active');
+      btn.classList.add('active');
+      playChime();
+    }
+
+    function toggleCheatMode() {
+      cheatMode = !cheatMode;
+      document.body.classList.toggle('cheat-mode', cheatMode);
+      document.getElementById('btn-cheat').classList.toggle('active', cheatMode);
+      showToast(cheatMode ? '⚡ Formula-Only Mode ON' : '📖 Full Explanations Restored');
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      document.getElementById('btn-theme').textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
+    }
+
+    function returnToHub() {
+      const xp = mastered.length * 50;
+      // Reports to local study-hub or cloud study-hub
+      const target = window.location.protocol === 'file:' 
+        ? '../study-hub/index.html?subject=acc&score=' + xp
+        : 'https://study-hub-696230670016.europe-west1.run.app/?subject=acc&score=' + xp;
+      location.href = target;
+    }
+
+    let audioCtx = null;
+    function playChime() {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const now = audioCtx.currentTime;
+        [432, 648].forEach((f, i) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(f, now);
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.exponentialRampToValueAtTime(0.1 / (i + 1), now + 0.04);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.1);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 1.1);
+        });
+      } catch (e) {}
+    }
+
+    function copyAllFormulas() {
+      const text = `# ACCS121 Test 2B Cheat-Sheet (Ch 12 & Ch 16)\n\n` +
+        currentAdjustments.map(a => `### ${a.title}\nFormula: ${a.formula}\n`).join('\n');
+      navigator.clipboard.writeText(text).then(() => showToast('📋 All 7 Bracket Formulas copied!'));
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    window.addEventListener('DOMContentLoaded', renderAll);
+  </script>
+</body>
+</html>
